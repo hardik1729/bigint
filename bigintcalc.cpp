@@ -1,5 +1,6 @@
 #include<iostream>
 #include<fstream>
+#include "base_case.h"
 #include "add.h"
 #include "sub.h"
 #include "mult.h"
@@ -7,12 +8,15 @@ using namespace std;
 
 int main(){
 	fstream fin1,fin2,foutr;
-	fin1.open("p.txt");
-	fin2.open("q.txt");
+	string file1="p.txt";
+	string file2="q.txt";
+	fin1.open(file1.c_str());
+	fin2.open(file2.c_str());
 	foutr.open("r.txt");
 	long long int h=0;
 	char s1,s2,q;
-	cin>>q;
+	unsigned int b;
+	cin>>b>>q;
 	long long int x=0;
 	long long int y=0;
 	while(1){
@@ -36,8 +40,8 @@ int main(){
 		if(y>x){
 			fin1.close();
 			fin2.close();
-			fin1.open("q.txt");
-			fin2.open("p.txt");
+			fin1.open(file2.c_str());
+			fin2.open(file1.c_str());
 			x=x+y;
 			y=x-y;
 			x=x-y;
@@ -55,7 +59,7 @@ int main(){
 		long long int j=0;
 		long long int k=0;
 		long long int l=0;
-		mult(fin1,fin2,foutr,c,h,i,j,k,l,x,y);
+		mult(fin1,fin2,foutr,c,h,i,j,k,l,x,y,b);
 
 	}else if((q=='+' && s1==s2)||(q=='-' && s1!=s2)){
 		if(q=='+' && s1=='-'){
@@ -71,8 +75,8 @@ int main(){
 		if(y>x){
 			fin1.close();
 			fin2.close();
-			fin1.open("q.txt");
-			fin2.open("p.txt");
+			fin1.open(file2.c_str());
+			fin2.open(file1.c_str());
 			x=x+y;
 			y=x-y;
 			x=x-y;
@@ -81,15 +85,15 @@ int main(){
 		long long int c=0;
 		long long int i=0;
 
-		add(fin1,fin2,foutr,c,h,i,x,y);
+		add(fin1,fin2,foutr,c,h,i,x,y,b);
 		
 	}else if((q=='+' && s1!=s2)||(q=='-' && s1==s2)){
 		int a=0;
 		if(s1=='-'){
 			fin1.close();
 			fin2.close();
-			fin1.open("q.txt");
-			fin2.open("p.txt");
+			fin1.open(file2.c_str());
+			fin2.open(file1.c_str());
 			x=x+y;
 			y=x-y;
 			x=x-y;
@@ -100,62 +104,60 @@ int main(){
 			if(a==1){
 				fin1.close();
 				fin2.close();
-				fin1.open("p.txt");
-				fin2.open("q.txt");
-				}else if(a==0){
-						fin1.close();
-						fin2.close();
-						fin1.open("q.txt");
-						fin2.open("p.txt");
-				}
-				x=x+y;
-				y=x-y;
-				x=x-y;
-				q='-';
-			}else if(x==y){
-				long long int k=0;
-					while(k==0 && l<x){
-						fin1.seekg(l,ios::beg);
-						fin2.seekg(l,ios::beg);
-						char q1,q2;
-						fin1>>q1;
-						fin2>>q2;
-						k=q1-q2;
-						l++;
-					}
-					if(k<0){
-						if(a==1){
+				fin1.open(file1.c_str());
+				fin2.open(file2.c_str());
+			}else if(a==0){
 					fin1.close();
 					fin2.close();
-					fin1.open("p.txt");
-					fin2.open("q.txt");
-				}else if(a==0){
-					fin1.close();
-					fin2.close();
-					fin1.open("q.txt");
-					fin2.open("p.txt");
-				}
-						l=l-1;
-						q='-';
-					}else if(k>0){
-						fin1.seekg(-1,ios::cur);
-						fin2.seekg(-1,ios::cur);
-						l=l-1;
-						q='+';
-					}else if(k==0){
-						foutr<<"0+";
-						cout<<"1"<<endl<<x<<" "<<y<<endl;
-						return 0;
-					}
-			}else{
-				q='+';
+					fin1.open(file2.c_str());
+					fin2.open(file1.c_str());
 			}
-
-			long long int c=0;
-			long long int i=0;
-			long long int j=0;
-			sub(fin1,fin2,foutr,c,h,i,j,x,y,l);
-		
+			x=x+y;
+			y=x-y;
+			x=x-y;
+			q='-';
+		}else if(x==y){
+			long long int k=0;
+			while(k==0 && l<x){
+				fin1.seekg(l,ios::beg);
+				fin2.seekg(l,ios::beg);
+				char q1,q2;
+				fin1>>q1;
+				fin2>>q2;
+				k=q1-q2;
+				l++;
+			}
+			if(k<0){
+				if(a==1){
+					fin1.close();
+					fin2.close();
+					fin1.open(file1.c_str());
+					fin2.open(file2.c_str());
+				}else if(a==0){
+					fin1.close();
+					fin2.close();
+					fin1.open(file2.c_str());
+					fin2.open(file1.c_str());
+				}
+				l=l-1;
+				q='-';
+			}else if(k>0){
+				fin1.seekg(-1,ios::cur);
+				fin2.seekg(-1,ios::cur);
+				l=l-1;
+				q='+';
+			}else if(k==0){
+				foutr<<"0+";
+				cout<<"1"<<endl<<x<<" "<<y<<endl;
+				return 0;
+			}
+		}else{
+			q='+';
+		}
+		long long int c=0;
+		long long int i=0;
+		long long int j=0;
+		sub(fin1,fin2,foutr,c,h,i,j,x,y,l,b);
 	}   
 	foutr<<q;
 	cout<<h<<endl<<x<<" "<<y<<endl; 

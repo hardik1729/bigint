@@ -2,7 +2,7 @@
 #include<fstream>
 using namespace std;
 
-void add(fstream &fin1,fstream &fin2,fstream &foutr,long long int &c,long long int &h,long long int &i,const long long int x,const long long int y){
+void add(fstream &fin1,fstream &fin2,fstream &foutr,long long int &c,long long int &h,long long int &i,const long long int x,const long long int y,const unsigned int b){
 	long long int v=0;
 	if(x==y){
 		if(i<x-1){
@@ -12,10 +12,11 @@ void add(fstream &fin1,fstream &fin2,fstream &foutr,long long int &c,long long i
 			fin1>>q1;
 			fin2>>q2;
 			v=(q1-48)+(q2-48)+c;
-			c=v/10;
+			c=v/b;
 			i++;
-			add(fin1,fin2,foutr,c,h,i,x,y);
-			foutr<<v%10;
+			add(fin1,fin2,foutr,c,h,i,x,y,b);
+			char out=48+(v%b);
+			foutr<<out;
 			h++;
 		}else if(i==x-1){
 			fin1.seekg(x-i-1,ios::beg);
@@ -24,15 +25,7 @@ void add(fstream &fin1,fstream &fin2,fstream &foutr,long long int &c,long long i
 			fin1>>q1;
 			fin2>>q2;
 			v=(q1-48)+(q2-48)+c;
-			long long int aa=0;
-			while(v!=0){
-				aa++;
-				v=v/10;
-			}
-			if(aa!=0){
-				foutr<<v;
-				h=h+aa;
-			}
+			base_case(foutr,v,h,b);
 		}
 	}else{
 		if(i<y){
@@ -42,35 +35,29 @@ void add(fstream &fin1,fstream &fin2,fstream &foutr,long long int &c,long long i
 			fin1>>q1;
 			fin2>>q2;
 			v=(q1-48)+(q2-48)+c;
-			c=v/10;
+			c=v/b;
 			i++;
-			add(fin1,fin2,foutr,c,h,i,x,y);
-			foutr<<v%10;
+			add(fin1,fin2,foutr,c,h,i,x,y,b);
+			char out=48+(v%b);
+			foutr<<out;
 			h++;
 		}else if(i<x-1){
 			fin1.seekg(x-i-1,ios::beg);
 			char q1;
 			fin1>>q1;
 			v=(q1-48)+c;
-			c=v/10;
+			c=v/b;
 			i++;
-			add(fin1,fin2,foutr,c,h,i,x,y);
-			foutr<<v%10;
+			add(fin1,fin2,foutr,c,h,i,x,y,b);
+			char out=48+(v%b);
+			foutr<<out;
 			h++;
 		}else if(i==x-1){
 			fin1.seekg(x-i-1,ios::beg);
 			char q1;
 			fin1>>q1;
 			v=(q1-48)+c;
-			long long int aa=0;
-			while(v!=0){
-				aa++;
-				v=v/10;
-			}
-			if(aa!=0){
-				foutr<<v;
-				h=h+aa;
-			}
+			base_case(foutr,v,h,b);
 		}
 	}
 	return;

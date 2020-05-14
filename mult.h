@@ -2,7 +2,7 @@
 #include<fstream>
 using namespace std;
 
-void mult(fstream &fin1,fstream &fin2,fstream &foutr,long long int &c,long long int &h,long long int &i,long long int &j,long long int &k,long long int &l,const long long int x,const long long int y){
+void mult(fstream &fin1,fstream &fin2,fstream &foutr,long long int &c,long long int &h,long long int &i,long long int &j,long long int &k,long long int &l,const long long int x,const long long int y,const unsigned int b){
 	long long int v=0;
 	while(j<y && i>=0){
 		fin1.seekg(x-i-1,ios::beg);
@@ -16,13 +16,7 @@ void mult(fstream &fin1,fstream &fin2,fstream &foutr,long long int &c,long long 
 	}
 	v=v+c;
 	if(x+y-2==i+j){
-		foutr<<v;
-		long long int aa=0;
-		while(v!=0){
-			aa++;
-			v=v/10;
-		}
-		h=h+aa;
+		base_case(foutr,v,h,b);
 		return;
 	}else{
 		if(k==x-1){
@@ -34,11 +28,11 @@ void mult(fstream &fin1,fstream &fin2,fstream &foutr,long long int &c,long long 
 			k++;
 			i=k;
 		}
-		c=v/10;
+		c=v/b;
 
-		mult(fin1,fin2,foutr,c,h,i,j,k,l,x,y);
-
-		foutr<<v%10;
+		mult(fin1,fin2,foutr,c,h,i,j,k,l,x,y,b);
+		char out=48+(v%b);
+		foutr<<out;
 		h++;
 		return;
 	}
