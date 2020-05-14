@@ -24,14 +24,15 @@ void add(fstream &fin1,fstream &fin2,fstream &foutr,long long int &c,long long i
 			fin1>>q1;
 			fin2>>q2;
 			v=(q1-48)+(q2-48)+c;
-			foutr<<v;
 			long long int aa=0;
 			while(v!=0){
 				aa++;
 				v=v/10;
 			}
-			if(aa==0){aa=1;}
-			h=h+aa;
+			if(aa!=0){
+				foutr<<v;
+				h=h+aa;
+			}
 		}
 	}else{
 		if(i<y){
@@ -61,13 +62,15 @@ void add(fstream &fin1,fstream &fin2,fstream &foutr,long long int &c,long long i
 			char q1;
 			fin1>>q1;
 			v=(q1-48)+c;
-			foutr<<v;
 			long long int aa=0;
 			while(v!=0){
 				aa++;
 				v=v/10;
 			}
-			h=h+aa;
+			if(aa!=0){
+				foutr<<v;
+				h=h+aa;
+			}
 		}
 	}
 	return;
