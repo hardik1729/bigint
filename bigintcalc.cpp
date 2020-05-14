@@ -1,167 +1,9 @@
 #include<iostream>
 #include<fstream>
+#include "add.h"
+#include "sub.h"
+#include "mult.h"
 using namespace std;
-
-void a(fstream &fin1,fstream &fin2,fstream &foutr,long long int &c,long long int &h,long long int &i,const long long int x,const long long int y){
-	long long int v=0;
-	if(x==y){
-		if(i<x-1){
-			fin1.seekg(x-i-1,ios::beg);
-			fin2.seekg(y-i-1,ios::beg);
-			char q1,q2;
-			fin1>>q1;
-			fin2>>q2;
-			v=(q1-48)+(q2-48)+c;
-			c=v/10;
-			i++;
-			a(fin1,fin2,foutr,c,h,i,x,y);
-			foutr<<v%10;
-			h++;
-		}else if(i==x-1){
-			fin1.seekg(x-i-1,ios::beg);
-			fin2.seekg(y-i-1,ios::beg);
-			char q1,q2;
-			fin1>>q1;
-			fin2>>q2;
-			v=(q1-48)+(q2-48)+c;
-			foutr<<v;
-			long long int aa=0;
-			while(v!=0){
-				aa++;
-				v=v/10;
-			}
-			if(aa==0){aa=1;}
-			h=h+aa;
-		}
-	}else{
-		if(i<y){
-			fin1.seekg(x-i-1,ios::beg);
-			fin2.seekg(y-i-1,ios::beg);
-			char q1,q2;
-			fin1>>q1;
-			fin2>>q2;
-			v=(q1-48)+(q2-48)+c;
-			c=v/10;
-			i++;
-			a(fin1,fin2,foutr,c,h,i,x,y);
-			foutr<<v%10;
-			h++;
-		}else if(i<x-1){
-			fin1.seekg(x-i-1,ios::beg);
-			char q1;
-			fin1>>q1;
-			v=(q1-48)+c;
-			c=v/10;
-			i++;
-			a(fin1,fin2,foutr,c,h,i,x,y);
-			foutr<<v%10;
-			h++;
-		}else if(i==x-1){
-			fin1.seekg(x-i-1,ios::beg);
-			char q1;
-			fin1>>q1;
-			v=(q1-48)+c;
-			foutr<<v;
-			long long int aa=0;
-			while(v!=0){
-				aa++;
-				v=v/10;
-			}
-			h=h+aa;
-		}
-	}
-	return;
-}
-
-void m(fstream &fin1,fstream &fin2,fstream &foutr,long long int &c,long long int &h,long long int &i,long long int &j,long long int &k,long long int &l,const long long int x,const long long int y){
-	long long int v=0;
-	while(j<y && i>=0){
-		fin1.seekg(x-i-1,ios::beg);
-		fin2.seekg(y-j-1,ios::beg);
-		char q1,q2;
-		fin1>>q1;
-		fin2>>q2;
-		v+=(q1-48)*(q2-48);
-		i--;
-		j++;
-	}
-	v=v+c;
-	if(x+y-2==i+j){
-		foutr<<v;
-		long long int aa=0;
-		while(v!=0){
-			aa++;
-			v=v/10;
-		}
-		h=h+aa;
-		return;
-	}else{
-		if(k==x-1){
-			i=k;
-			l++;
-			j=l;
-		}else{
-			j=0;
-			k++;
-			i=k;
-		}
-		c=v/10;
-
-		m(fin1,fin2,foutr,c,h,i,j,k,l,x,y);
-
-		foutr<<v%10;
-		h++;
-		return;
-	}
-}
-
-void s(fstream &fin1,fstream &fin2,fstream &foutr,long long int &c,long long int &h,long long int &i,long long int &j,const long long int x,const long long int y,const long long int l){
-	long long int v=0;
-	if(i<y-l){
-		fin1.seekg(x-i-1,ios::beg);
-		fin2.seekg(y-i-1,ios::beg);
-		char q1,q2;
-		fin1>>q1;
-		fin2>>q2;
-		v=(q1-48)-(q2-48)-c;
-		if(v<0){
-			v=v+10;
-			c=1;
-		}else{
-			c=0;
-		}
-		i++;
-		s(fin1,fin2,foutr,c,h,i,j,x,y,l);
-		if(j==0 && v!=0){
-			j=1;
-		}
-		if(j==1){
-			foutr<<v;
-			h++;
-		}
-	}else if(i<x-l){
-		fin1.seekg(x-i-1,ios::beg);
-		char q1;
-		fin1>>q1;
-		v=(q1-48)-c;
-		if(v<0){
-			v=v+10;
-			c=1;
-		}else{
-			c=0;
-		}
-		i++;
-		s(fin1,fin2,foutr,c,h,i,j,x,y,l);
-		if(j==0 && v!=0){
-			j=1;
-		}         
-		if(j==1){
-			foutr<<v;
-			h++;
-		}
-	}
-	return;
-}
 
 int main(){
 	fstream fin1,fin2,foutr;
@@ -213,7 +55,7 @@ int main(){
 		long long int j=0;
 		long long int k=0;
 		long long int l=0;
-		m(fin1,fin2,foutr,c,h,i,j,k,l,x,y);
+		mult(fin1,fin2,foutr,c,h,i,j,k,l,x,y);
 
 	}else if((q=='+' && s1==s2)||(q=='-' && s1!=s2)){
 		if(q=='+' && s1=='-'){
@@ -239,7 +81,7 @@ int main(){
 		long long int c=0;
 		long long int i=0;
 
-		a(fin1,fin2,foutr,c,h,i,x,y);
+		add(fin1,fin2,foutr,c,h,i,x,y);
 		
 	}else if((q=='+' && s1!=s2)||(q=='-' && s1==s2)){
 		int a=0;
@@ -312,7 +154,7 @@ int main(){
 			long long int c=0;
 			long long int i=0;
 			long long int j=0;
-			s(fin1,fin2,foutr,c,h,i,j,x,y,l);
+			sub(fin1,fin2,foutr,c,h,i,j,x,y,l);
 		
 	}   
 	foutr<<q;
