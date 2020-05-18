@@ -3,22 +3,14 @@
 #include<vector>
 using namespace std;
 #define M 9000000
-#define N 2*M-1
+#define N 2*M
 #define B 1024
 #define T 8
 
-__global__ void square(char I[M], unsigned int O[N]){
+__global__ void square(unsigned long long int I[M], unsigned long long int O[N]){
 	int x = blockIdx.x;
 	int y = threadIdx.x;
-	int size=0;
-	int it=0;
-	int pow=1;
-	while(I[it]!='+'){
-		size+=(I[it]-48)*pow;
-		it++;
-		pow=pow*10;
-	}
-	it++;
+	int size=I[0];
 	int idx_start=(y+x*T);
 	int idx_end=(1+y+x*T);
 	int C=B*T;
@@ -54,9 +46,9 @@ __global__ void square(char I[M], unsigned int O[N]){
 			}
 			while(i!=size && j!=-1 && i<=j){
 				if(i<j)
-					O[idx]+=2*(I[it+i]-48)*(I[it+j]-48);
+					O[idx+1]+=2*(I[1+i])*(I[1+j]);
 				else if(i==j){
-					O[idx]+=(I[it+i]-48)*(I[it+j]-48);
+					O[idx+1]+=(I[1+i])*(I[1+j]);
 				}
 				i++;
 				j--;
@@ -67,91 +59,48 @@ __global__ void square(char I[M], unsigned int O[N]){
 		printf("%d\n", idx_end);
 	O[N-1]=1;
 }
-/*
-void base_case(fstream &foutr,int v,int &h,const unsigned int b){
-	if(v!=0){
-		base_case(foutr,v/b,h,b);
-		foutr<<v%b;
-		h++;
-	}
-	return;
-}
 
-void add(fstream &foutr,int* v,int c,int i,int h,int size,const unsigned int b){
-	if(i==2*(size-1)){
-		base_case(foutr,v,h,b);
-		return;
-	}else{
-		v=v+c;
-		c=v/b;
-		char out=48+(v%b);
-		foutr<<out;
-		h++;
-		add(foutr,v,c,i,h,size,b);
-		return;
-	}
-}
-*/
 int main(){
-	fstream fin,foutr;
-	string file="s.txt";
-	fin.open(file.c_str());
-	foutr.open("r.txt");
 
-	char *hostI=new char[M];
-	unsigned int *hostO=new unsigned int[N];
+	unsigned long long int *hostI=new unsigned long long int[M];
+	unsigned long long int *hostO=new unsigned long long int[N];
 
-	int size=0;
-	int it=0;
-	int pow=1;
-	char s;
-	fin>>s;
-	while(s!='+'){
-		size+=(s-48)*pow;
-		it++;
-		pow=pow*10;
-		fin>>s;
-	}
-	it++;
+	int size=4096;
 
-	fin.close();
-	fin.open(file.c_str());
-
-	//cout<<"input"<<endl;
-	for(int i=0;i<size+it;i++){
-		fin>>s;
-		hostI[i]=s;
-		//cout<<hostI[i]<<endl;
+	for(int i=0;i<size+1;i++){
+		if(i==0){
+			hostI[0]=size;
+		}else{
+			hostI[i]=1;
+		}
 	}
 
 
-	char *I;
+	unsigned long long int *I;
 
-	unsigned int *O;
+	unsigned long long int *O;
 	cout<<"before alloc"<<endl;
-	cudaMalloc((void**)&I, sizeof(char) * M);
+	cudaMalloc((void**)&I, sizeof(unsigned long long int) * M);
 
-	cudaMalloc((void**)&O, sizeof(unsigned int) * N);
+	cudaMalloc((void**)&O, sizeof(unsigned long long int) * N);
 	// cout<<"after alloc"<<endl;
 	// cout<<"before copy"<<endl;
-	cudaMemcpy(I,hostI,sizeof(char) * (size+it),cudaMemcpyHostToDevice);
+	cudaMemcpy(I,hostI,sizeof(unsigned long long int) * (size+1),cudaMemcpyHostToDevice);
 
-	cudaMemcpy(O,hostO,sizeof(unsigned int) * 2*size-1,cudaMemcpyHostToDevice);
+	cudaMemcpy(O,hostO,sizeof(unsigned long long int) * (2*size),cudaMemcpyHostToDevice);
 	cout<<"after copy"<<endl;
 	dim3 blocks(B,1,1);
 	dim3 threads(T,1,1);
 
-	square<<<blocks,threads>>>((char(*))I, (unsigned int(*))O);
+	square<<<blocks,threads>>>((unsigned long long int(*))I, (unsigned long long int(*))O);
 	
-	cudaMemcpy(hostO,O,sizeof(unsigned int) * N,cudaMemcpyDeviceToHost);
+	cudaMemcpy(hostO,O,sizeof(unsigned long long int) * N,cudaMemcpyDeviceToHost);
 	
 	// cout<<"output"<<endl;
-	for (int i=0;i<2*size-1;i++){
-		cout<<hostO[i]<<" ";
+	for (int i=0;i<2*size;i++){
+		// cout<<hostO[i]<<" ";
 	}
 	
-	// add(&hostO,foutr,);
-
 	cout<<hostO[N-1]<<endl;
 
 	return 0;
