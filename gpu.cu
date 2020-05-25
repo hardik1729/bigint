@@ -14,6 +14,7 @@ __global__ void square(unsigned long long int I[M], unsigned long long int O[N])
 	int idx_start=(y+x*T);
 	int idx_end=(1+y+x*T);
 	int C=B*T;
+	/*
 	if(2*size>C){
 		int jump=2*size/(C/2)-1;
 		if(idx_start<(C/4)){
@@ -33,16 +34,21 @@ __global__ void square(unsigned long long int I[M], unsigned long long int O[N])
 			idx_end+=(C/4)*jump;
 		}
 	}
-	
+	*/
+	// if(2*size>C){
+
+	// }
+
 	for(int idx=idx_start+1;idx<idx_end+1;idx++){
 		if(idx<2*size){	
+			O[idx]=0;
 			int i,j;
 			if(idx<size+1){
 				i=idx;
 				j=1;
 			}else{
 				i=size;
-				j=idx%size;
+				j=(idx%size)+1;
 			}
 			while(i!=0 && j!=size+1 && i>=j){
 				if(i>j){
@@ -120,8 +126,9 @@ int main(){
 				flag=0;
 			}
 			hostI[pos]=hostO[pos];
+			// cout<<hostO[pos]<<",";
 			hostO[pos]=0;
-			if(c!=0 || hostI[pos]!=0)
+			if((pos>=2*size && (c!=0 || hostI[pos]!=0)) || pos<2*size)
 				pos++;
 		}
 		hostO[0]=pos-1;
