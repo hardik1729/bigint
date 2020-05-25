@@ -57,7 +57,7 @@ __global__ void square(unsigned long long int I[M], unsigned long long int O[N])
 		}
 	}
 	if(idx_end==size*2)
-		// printf("index_end : %d\n", idx_end);
+		printf("index_end : %d\n", idx_end);
 	O[N-1]=1;
 }
 
@@ -85,8 +85,7 @@ int main(){
 	cudaMalloc((void**)&I, sizeof(unsigned long long int) * M);
 
 	cudaMalloc((void**)&O, sizeof(unsigned long long int) * N);
-	for(int i=0;i<5;i++){
-		// cout<<i<<endl;
+	while(size<=4096){
 		cudaMemcpy(I,hostI,sizeof(unsigned long long int) * (size+1),cudaMemcpyHostToDevice);
 
 		cudaMemcpy(O,hostO,sizeof(unsigned long long int) * (2*size),cudaMemcpyHostToDevice);
@@ -108,7 +107,6 @@ int main(){
 			hostO[pos]=hostO[pos]%base;
 			
 			if(pos==1){
-				// cout<<"number : ";
 				if(hostO[pos]<2){
 					hostO[pos]=base-2+hostO[pos];
 					flag=1;
@@ -121,7 +119,6 @@ int main(){
 				hostO[pos]-=1;
 				flag=0;
 			}
-			// cout<<hostO[pos]<<" ";
 			hostI[pos]=hostO[pos];
 			hostO[pos]=0;
 			if(c!=0 || hostI[pos]!=0)
@@ -131,8 +128,8 @@ int main(){
 		hostI[0]=hostO[0];
 		size=hostI[0];
 		hostO[0]=0;
-		cout<<endl<<"size : "<<hostI[0]<<endl;
+		cout<<"size : "<<hostI[0]<<endl;
 		cout<<"working : "<<hostO[N-1]<<endl<<endl;
 	}
 	return 0;
-}
+} 
