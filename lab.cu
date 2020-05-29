@@ -1,11 +1,11 @@
 #include<iostream>
 #include<fstream>
 using namespace std;
-#define M 128
-#define D 64
-#define N D*(2*M-1)
-#define B 1024
-#define T 8
+const long int M = 1000;
+const long int D = 10;
+const long int N = D*(2*M-1);
+const long int B = 2097152;
+const long int T = 1024;
 
 __global__ void square(unsigned long long int I[M], unsigned long long int O[N]){
 	int x = blockIdx.x;
@@ -65,7 +65,7 @@ int main(){
 	unsigned long long int *hostI=new unsigned long long int[M];
 	unsigned long long int *hostO=new unsigned long long int[N];
 
-	int size=64;
+	int size=2;
 	int base=1024*1024;
 
 	for(int i=0;i<size+1;i++){
@@ -85,17 +85,18 @@ int main(){
 	cudaMalloc((void**)&I, sizeof(unsigned long long int) * M);
 
 	cudaMalloc((void**)&O, sizeof(unsigned long long int) * N);
-	while(size<=64){
+	while(size<=1000){
 		cudaMemcpy(I,hostI,sizeof(unsigned long long int) * (size+1),cudaMemcpyHostToDevice);
 
-		cudaMemcpy(O,hostO,sizeof(unsigned long long int) * (2*size),cudaMemcpyHostToDevice);
+		cudaMemcpy(O,hostO,sizeof(unsigned long long int) * (2*size-1)*D,cudaMemcpyHostToDevice);
 		
 		dim3 blocks(B,1,1);
 		dim3 threads(T,1,1);
 
 		square<<<blocks,threads>>>((unsigned long long int(*))I, (unsigned long long int(*))O);
-		
+		cout<<"hel"<<endl;
 		cudaMemcpy(hostO,O,sizeof(unsigned long long int) * N,cudaMemcpyDeviceToHost);
+		cout<<"ell"<<endl;
 		unsigned long long int c=0;
 		int pos=1;
 		int flag=0;
@@ -111,7 +112,7 @@ int main(){
 			hostI[pos]=hostI[pos]+c;
 			c=hostI[pos]/base;
 			hostI[pos]=hostI[pos]%base;
-			if(pos==1){
+			/*if(pos==1){
 				if(hostI[pos]<2){
 					hostI[pos]=base-2+hostI[pos];
 					flag=1;
@@ -123,8 +124,8 @@ int main(){
 			}else if(flag==1){
 				hostI[pos]-=1;
 				flag=0;
-			}
-			cout<<hostI[pos]<<",";
+			}*/
+			cout<<hostI[pos]<<","<<c<<";";
 			if((pos>=2*size && (c!=0 || hostI[pos]!=0)) || pos<2*size)
 				pos++;
 		}
