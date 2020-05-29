@@ -1,6 +1,5 @@
 #include<iostream>
 #include<fstream>
-#include<vector>
 using namespace std;
 #define M 17000000
 #define N 2*M
@@ -102,7 +101,7 @@ int main(){
 	cudaMalloc((void**)&I, sizeof(unsigned long long int) * M);
 
 	cudaMalloc((void**)&O, sizeof(unsigned long long int) * N);
-	while(size<=65537){
+	while(size<=base*16){
 		cudaMemcpy(I,hostI,sizeof(unsigned long long int) * (size+1),cudaMemcpyHostToDevice);
 
 		cudaMemcpy(O,hostO,sizeof(unsigned long long int) * (2*size),cudaMemcpyHostToDevice);
@@ -141,6 +140,9 @@ int main(){
 			hostO[pos]=0;
 			if((pos>=2*size && (c!=0 || hostI[pos]!=0)) || pos<2*size)
 				pos++;
+		}
+		if(hostI[pos-1]==0){
+			pos--;
 		}
 		hostO[0]=pos-1;
 		hostI[0]=hostO[0];
