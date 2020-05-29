@@ -65,7 +65,7 @@ int main(){
 	unsigned long long int *hostI=new unsigned long long int[M];
 	unsigned long long int *hostO=new unsigned long long int[N];
 
-	int size=65;
+	int size=2;
 	int base=1024*1024;
 
 	for(int i=0;i<size+1;i++){
@@ -81,11 +81,11 @@ int main(){
 	unsigned long long int *I;
 
 	unsigned long long int *O;
-	cout<<"hel"<<endl;
-	cudaMalloc((void**)&I, sizeof(unsigned long long int) * M);cout<<"ell"<<endl;
+
+	cudaMalloc((void**)&I, sizeof(unsigned long long int) * M);
 
 	cudaMalloc((void**)&O, sizeof(unsigned long long int) * N);
-	while(size<=65){
+	while(size<=33){
 		cudaMemcpy(I,hostI,sizeof(unsigned long long int) * (size+1),cudaMemcpyHostToDevice);
 
 		cudaMemcpy(O,hostO,sizeof(unsigned long long int) * (2*size-1)*D,cudaMemcpyHostToDevice);
