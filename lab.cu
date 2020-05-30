@@ -2,7 +2,7 @@
 #include<fstream>
 using namespace std;
 const long int M = 17000000;
-const long int D = 40;
+const long int D = 2;
 const long int N = D*(2*M-1);
 const long int B = 2097152;
 const long int T = 1024;
