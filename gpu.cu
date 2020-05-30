@@ -3,8 +3,8 @@
 using namespace std;
 #define M 17000000
 #define N 2*M
-#define B 1024
-#define T 8
+const long int B = 2097152;
+const long int T = 1024;
 
 __global__ void square(unsigned long long int I[M], unsigned long long int O[N]){
 	int x = blockIdx.x;
@@ -12,7 +12,7 @@ __global__ void square(unsigned long long int I[M], unsigned long long int O[N])
 	int size=I[0];
 	int idx_start=(y+x*T);
 	int idx_end=(1+y+x*T);
-	int C=B*T;
+	long int C=B*T;
 
 	if(2*size-1>C){
 		int n=int((sqrtf(1+2*(2*size-1-C))-1)/2)+1;
@@ -80,14 +80,14 @@ int main(){
 	unsigned long long int *hostI=new unsigned long long int[M];
 	unsigned long long int *hostO=new unsigned long long int[N];
 
-	int size=1;
+	int size=140;
 	int base=1024*1024;
 
 	for(int i=0;i<size+1;i++){
 		if(i==0){
 			hostI[0]=size;
 		}else if(i==size){
-			hostI[i]=4;
+			hostI[i]=1;
 		}else{
 			hostI[i]=0;
 		}
@@ -101,7 +101,7 @@ int main(){
 	cudaMalloc((void**)&I, sizeof(unsigned long long int) * M);
 
 	cudaMalloc((void**)&O, sizeof(unsigned long long int) * N);
-	while(size<=base*16){
+	while(size<=140){
 		cudaMemcpy(I,hostI,sizeof(unsigned long long int) * (size+1),cudaMemcpyHostToDevice);
 
 		cudaMemcpy(O,hostO,sizeof(unsigned long long int) * (2*size),cudaMemcpyHostToDevice);
@@ -121,8 +121,7 @@ int main(){
 			hostO[pos]=hostO[pos]+c;
 			c=hostO[pos]/base;
 			hostO[pos]=hostO[pos]%base;
-			
-			if(pos==1){
+			/*if(pos==1){
 				if(hostO[pos]<2){
 					hostO[pos]=base-2+hostO[pos];
 					flag=1;
@@ -134,7 +133,7 @@ int main(){
 			}else if(flag==1){
 				hostO[pos]-=1;
 				flag=0;
-			}
+			}*/
 			hostI[pos]=hostO[pos];
 			// cout<<hostO[pos]<<",";
 			hostO[pos]=0;

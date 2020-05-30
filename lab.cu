@@ -1,61 +1,51 @@
 #include<iostream>
 #include<fstream>
 using namespace std;
-const long int M = 500;
-const long int D = 10;
+const long int M = 17000000;
+const long int D = 40;
 const long int N = D*(2*M-1);
-const long int B = 1024;//2097152;
-const long int T = 8;//1024;
+const long int B = 2097152;
+const long int T = 1024;
 
 __global__ void square(unsigned long long int I[M], unsigned long long int O[N]){
 	int x = blockIdx.x;
 	int y = threadIdx.x;
 	int size=I[0];
-	int idx=(y+x*T);
-
-	if(idx<D*(2*size-1)){
-		O[idx+1]=0;
-		int i,j,op,idx_one,idx_two,flag;
-		if(idx/D<size){
-			i=idx/D+1;
-			j=1;
-			op=(i+1)/2;
-		}else{
-			i=size;
-			j=((idx/D)%size)+2;
-			op=(size-j)/2+1;
-			flag=1;
-		}
-		if(op>=D){
-			i-=(op/D)*(idx%D);
-			j+=(op/D)*(idx%D);
-			idx_one=i-op/D;
-			idx_two=j+op/D;
-			if(idx%D==D-1){
-				idx_one+=(idx_two-op-1-flag);
-				idx_two-=(idx_two-op-1-flag);
-			}
-		}else{
-			if(idx%D!=D-1){
-				idx_one=i;
-				idx_two=j;
-			}else{
-				idx_one=i-op;
-				idx_two=j+op;
-			}
-		}
-		while(i!=idx_one && j!=idx_two){
-			if(i>j){
-				O[idx+1]+=2*(I[i])*(I[j]);
-			}
-			else if(i==j){
-				O[idx+1]+=(I[i])*(I[j]);
-			}
-			i--;
-			j++;
-		}
-	}
-	if(idx+1==(size*2-1)*D)
+        int idx=(y+x*T);
+        if(idx<D*(2*size-1)){
+                O[idx+1]=0;
+                int i,j,op,idx_one,idx_two;
+                if(idx/D<size){
+                        i=idx/D+1;
+                        j=1;
+                        op=(i+1)/2;                                                              }else{
+                        i=size;
+                        j=((idx/D)%size)+2;
+                        op=(size-j)/2+1;                                                         }                                                                                if(op>=D){
+                        i-=(op/D)*(idx%D);
+                        j+=(op/D)*(idx%D);                                                               if(idx%D==D-1){
+                                idx_one=i+(op/D)*(idx%D)-op;                                                     idx_two=j-(op/D)*(idx%D)+op;
+                        }else{
+                                idx_one=i-op/D;
+                                idx_two=j+op/D;
+                        }
+                }else{
+                        if(idx%D!=D-1){                                                                          idx_one=i;
+                                idx_two=j;
+                        }else{                                                                                   idx_one=i-op;                                                                    idx_two=j+op;                                                            }
+                }
+                while(i!=idx_one && j!=idx_two){
+                        if(i>j){
+                                O[idx+1]+=2*(I[i])*(I[j]);
+                        }
+                        else if(i==j){
+                                O[idx+1]+=(I[i])*(I[j]);
+                        }
+                        i--;
+                        j++;
+                }
+        }
+	if(idx+1==(2*size-1)*D)
 		printf("index_end : %d\n", idx+1);
 	O[N-1]=1;
 }
@@ -65,7 +55,7 @@ int main(){
 	unsigned long long int *hostI=new unsigned long long int[M];
 	unsigned long long int *hostO=new unsigned long long int[N];
 
-	int size=2;
+	int size=4;
 	int base=1024*1024;
 
 	for(int i=0;i<size+1;i++){
@@ -85,7 +75,7 @@ int main(){
 	cudaMalloc((void**)&I, sizeof(unsigned long long int) * M);
 
 	cudaMalloc((void**)&O, sizeof(unsigned long long int) * N);
-	while(size<=33){
+	while(size<=4){
 		cudaMemcpy(I,hostI,sizeof(unsigned long long int) * (size+1),cudaMemcpyHostToDevice);
 
 		cudaMemcpy(O,hostO,sizeof(unsigned long long int) * (2*size-1)*D,cudaMemcpyHostToDevice);
@@ -94,9 +84,7 @@ int main(){
 		dim3 threads(T,1,1);
 
 		square<<<blocks,threads>>>((unsigned long long int(*))I, (unsigned long long int(*))O);
-		
 		cudaMemcpy(hostO,O,sizeof(unsigned long long int) * N,cudaMemcpyDeviceToHost);
-		
 		unsigned long long int c=0;
 		int pos=1;
 		int flag=0;
@@ -124,8 +112,9 @@ int main(){
 			}else if(flag==1){
 				hostI[pos]-=1;
 				flag=0;
-			}*/
-			// cout<<hostI[pos]<<","<<c<<";";
+			}
+			*/
+			//cout<<hostI[pos]<<","<<c<<";";
 			if((pos>=2*size && (c!=0 || hostI[pos]!=0)) || pos<2*size)
 				pos++;
 		}
