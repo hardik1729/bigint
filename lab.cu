@@ -11,40 +11,49 @@ __global__ void square(unsigned long long int I[M], unsigned long long int O[N])
 	int x = blockIdx.x;
 	int y = threadIdx.x;
 	int size=I[0];
-        int idx=(y+x*T);
-        if(idx<D*(2*size-1)){
-                O[idx+1]=0;
-                int i,j,op,idx_one,idx_two;
-                if(idx/D<size){
-                        i=idx/D+1;
-                        j=1;
-                        op=(i+1)/2;                                                              }else{
-                        i=size;
-                        j=((idx/D)%size)+2;
-                        op=(size-j)/2+1;                                                         }                                                                                if(op>=D){
-                        i-=(op/D)*(idx%D);
-                        j+=(op/D)*(idx%D);                                                               if(idx%D==D-1){
-                                idx_one=i+(op/D)*(idx%D)-op;                                                     idx_two=j-(op/D)*(idx%D)+op;
-                        }else{
-                                idx_one=i-op/D;
-                                idx_two=j+op/D;
-                        }
-                }else{
-                        if(idx%D!=D-1){                                                                          idx_one=i;
-                                idx_two=j;
-                        }else{                                                                                   idx_one=i-op;                                                                    idx_two=j+op;                                                            }
-                }
-                while(i!=idx_one && j!=idx_two){
-                        if(i>j){
-                                O[idx+1]+=2*(I[i])*(I[j]);
-                        }
-                        else if(i==j){
-                                O[idx+1]+=(I[i])*(I[j]);
-                        }
-                        i--;
-                        j++;
-                }
+    int idx=(y+x*T);
+    if(idx<D*(2*size-1)){
+        O[idx+1]=0;
+        int i,j,op,idx_one,idx_two;
+        if(idx/D<size){
+            i=idx/D+1;
+            j=1;
+            op=(i+1)/2;
+        }else{
+            i=size;
+            j=((idx/D)%size)+2;
+            op=(size-j)/2+1;                                                   
         }
+        if(op>=D){
+            i-=(op/D)*(idx%D);
+            j+=(op/D)*(idx%D);
+            if(idx%D==D-1){
+                idx_one=i+(op/D)*(idx%D)-op;
+                idx_two=j-(op/D)*(idx%D)+op;
+            }else{
+                idx_one=i-op/D;
+                idx_two=j+op/D;
+            }
+        }else{
+            if(idx%D!=D-1){                                                                          
+            	idx_one=i;
+                idx_two=j;
+            }else{
+                idx_one=i-op;
+                idx_two=j+op;
+            }
+        }
+        while(i!=idx_one && j!=idx_two){
+            if(i>j){
+                    O[idx+1]+=2*(I[i])*(I[j]);
+            }
+            else if(i==j){
+                    O[idx+1]+=(I[i])*(I[j]);
+            }
+            i--;
+            j++;
+        }
+	}
 	if(idx+1==(2*size-1)*D)
 		printf("index_end : %d\n", idx+1);
 	O[N-1]=1;
