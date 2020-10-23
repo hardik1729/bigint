@@ -47,7 +47,8 @@ int main(){
 	unsigned long long int *hostO=new unsigned long long int[N];
 
 	unsigned long long int size=1;
-	unsigned long long int base=1024*1024;
+	unsigned long long int s=20;
+	unsigned long long int base=pow(2,s);
 	unsigned long long int p;
 	cin>>p;
 	int total_count=p-2;
@@ -129,29 +130,32 @@ int main(){
 		}
 
 //MODULO REDUCTION TO HALF
-		while(hostI[0]>p/20+1){
+		cout<<"step : "<<count<<endl;
+		int m_count=0;
+		while(hostI[0]>p/s+1 && m_count<5){
 			flag=0;
-			if(2*(p/20+1)-hostI[0]==1)
+			if(2*(p/s+1)-hostI[0]==1)
 				flag=1;
 			carry=0;
 			for(idx=1;carry!=0 || (idx<=hostI[0] && idx<=p/20+1);idx++){
-				if(idx>p/20+1){
+				if(idx>p/s+1){
 					hostI[idx]=carry;
 					carry=0;
-				}else if(idx==p/20+1 && flag){
+				}else if(idx==p/s+1 && flag){
 					hostI[idx]=(hostI[idx]+carry);
 					carry=(hostI[idx])/base;
 					hostI[idx]%=base;		
 				}else{
-					hostI[idx]=(hostI[idx]+hostI[idx+p/20+1]*pow(2,20-p%20)+carry);
+					hostI[idx]=(hostI[idx]+hostI[idx+p/s+1]*pow(2,s-p%s)+carry);
 					carry=(hostI[idx])/base;
 					hostI[idx]%=base;
 				}
-				cout<<idx<<","<<hostI[idx]<<","<<carry<<";";
+				// cout<<idx<<","<<hostI[idx]<<";";
 			}
-			cout<<endl;
+			// cout<<endl;
 			while(--idx>-1 && hostI[idx]==0);
 			hostI[0]=idx;
+			m_count++;
 		}
 
 //MODULO
@@ -159,6 +163,9 @@ int main(){
 		// 	cout<<endl<<"comeback after coding it.";
 		// }
  		size=hostI[0];
+ 		for(int i=1;i<size+1;i++)
+ 			cout<<i-1<<","<<hostI[i]<<";";
+ 		cout<<endl;
 		cout<<"size : "<<hostI[0]<<endl<<endl;
 		count++;
 	}
