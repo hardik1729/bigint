@@ -1,7 +1,7 @@
 #include<iostream>
 #include<fstream>
 using namespace std;
-#define M (100+1)
+#define M (10000+1)
 #define N 2*(M-1)
 unsigned long long int B = 65535;
 unsigned long long int T = 1024;
@@ -72,9 +72,11 @@ int main(){
 
 	cudaMalloc((void**)&O, sizeof(unsigned long long int) * N);
 	while(count<=total_count){
+		// cout<<"step : "<<count<<endl;
 //SQUARE
 		cudaError_t err=cudaMemcpy(I,hostI,sizeof(unsigned long long int) * (size+1),cudaMemcpyHostToDevice);
-		cout<<cudaGetErrorString(err)<<endl;
+		if(err)
+			cout<<cudaGetErrorString(err)<<endl;
 
 		T=1024;
 		B=1+(2*size-1)/T;
@@ -85,7 +87,8 @@ int main(){
 		square<<<blocks,threads>>>((unsigned long long int(*))I, (unsigned long long int(*))O);	
 
 		err=cudaMemcpy(hostO,O,sizeof(unsigned long long int) * 2*size,cudaMemcpyDeviceToHost);
-		cout<<cudaGetErrorString(err)<<endl;
+		if(err)
+			cout<<cudaGetErrorString(err)<<endl;
 
 //NORMALIZED SUM
 		unsigned long long int carry=0;
@@ -124,7 +127,6 @@ int main(){
 		}
 
 //MODULO
-		cout<<"step : "<<count<<endl;
 		while(hostI[0]>p/s+1){
 			for(idx=1;carry!=0 || idx<=p/s+1;idx++){
 				if(idx>p/s+1){
@@ -148,25 +150,32 @@ int main(){
 		}
 
  		size=hostI[0];
- 		if(total_count==count && size==p/s+1){
- 			int flag=1;
- 			for(int i=1;i<size+1;i++){
- 				if(i>1 && i<size)
- 					flag=flag && (hostI[i]==base-1);
- 				cout<<i-1<<","<<hostI[i]<<";";
- 			}
- 			cout<<endl;
- 			unsigned long long int l=base-hostI[1];
- 			unsigned long long int h=pow(2,p%s)*l-1;
- 			if(h==hostI[size] && flag)
- 				cout<<"PRIME"<<endl;
- 			else
- 				cout<<"COMPOSITE"<<endl;
- 		}else{
- 			cout<<"TRICKY"<<endl;
- 		}
- 		cout<<"size : "<<hostI[0]<<endl<<endl;
-		count++;
+ 		if(total_count==count){
+ 			if(size==p/s+1){
+	 			int flag=1;
+	 			for(int i=1;i<size+1;i++){
+	 				if(i>1 && i<size)
+	 					flag=flag && (hostI[i]==base-1);
+	 				if(hostI[i]!=base-1)
+	 					cout<<i-1<<","<<hostI[i]<<";";
+	 			}
+	 			cout<<endl;
+	 			unsigned long long int l=base-hostI[1];
+	 			unsigned long long int h=pow(2,p%s)*l-1;
+	 			if(h==hostI[size] && flag)
+	 				cout<<"PRIME"<<endl;
+	 			else
+	 				cout<<"COMPOSITE"<<endl;
+	 		}else{
+	 			for(int i=1;i<size+1;i++){
+	 				cout<<i-1<<","<<hostI[i]<<";";
+	 			}
+	 			cout<<endl;
+	 			cout<<"TRICKY"<<endl;
+	 		}
+	 		cout<<"size : "<<hostI[0]<<endl<<endl;
+	 	}
+ 		count++;
 	}
 	return 0;
 }
