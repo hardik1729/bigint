@@ -47,7 +47,7 @@ int main(){
 	unsigned long long int *hostO=new unsigned long long int[N];
 
 	unsigned long long int size=1;
-	unsigned long long int s=20;
+	unsigned long long int s=3;
 	unsigned long long int base=pow(2,s);
 	unsigned long long int p;
 	cin>>p;
@@ -92,10 +92,15 @@ int main(){
 
 //NORMALIZED SUM
 		unsigned long long int carry=0;
-		unsigned long long int idx;
+		int idx;
 		for(idx=1;carry!=0 || idx<2*size;idx++){
-			hostI[idx]=(hostO[idx]+carry)%base;
-			carry=(carry+hostO[idx])/base;
+			if(idx<2*size){
+				hostI[idx]=(hostO[idx]+carry)%base;
+				carry=(carry+hostO[idx])/base;
+			}else{
+				hostI[idx]=carry%base;
+				carry=carry/base;
+			}
 			// cout<<hostI[idx]<<",";	
 		}
 		// cout<<endl;
@@ -145,7 +150,7 @@ int main(){
 				// cout<<idx<<","<<hostI[idx]<<","<<carry<<";";
 			}
 			// cout<<endl;
-			while(--idx>-1 && hostI[idx]==0);
+			while(--idx && hostI[idx]==0);
 			hostI[0]=idx;
 		}
 //FINAL CHECK
@@ -174,7 +179,7 @@ int main(){
 				cout<<endl;
 	 			cout<<"TRICKY"<<endl;
 	 		}
-	 		cout<<"size : "<<hostI[0]<<","<<idx<<endl<<endl;	 	
+	 		cout<<"size : "<<hostI[0]<<endl<<endl;
 	 	}
  		count++;
 	}
