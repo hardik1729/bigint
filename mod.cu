@@ -92,7 +92,7 @@ int main(){
 
 //NORMALIZED SUM
 		unsigned long long int carry=0;
-		int idx;
+		unsigned long long int idx;
 		for(idx=1;carry!=0 || idx<2*size;idx++){
 			hostI[idx]=(hostO[idx]+carry)%base;
 			carry=(carry+hostO[idx])/base;
@@ -138,15 +138,15 @@ int main(){
 					carry=hostI[idx]/base;
 					hostI[idx]%=base;
 				}else{
-					hostI[idx]=hostI[idx]+hostI[idx+p/s+1]*pow(2,s-p%s)+carry;
+					hostI[idx]=hostI[idx]+hostI[idx+p/s+1]*pow(2,s-(p%s))+carry;
 					carry=hostI[idx]/base;
 					hostI[idx]%=base;
 				}
 				// cout<<idx<<","<<hostI[idx]<<","<<carry<<";";
 			}
 			// cout<<endl;
-			// while(--idx>-1 && hostI[idx]==0);
-			hostI[0]=--idx;
+			while(--idx>-1 && hostI[idx]==0);
+			hostI[0]=idx;
 		}
 //FINAL CHECK
  		size=hostI[0];
@@ -174,7 +174,7 @@ int main(){
 				cout<<endl;
 	 			cout<<"TRICKY"<<endl;
 	 		}
-	 		cout<<"size : "<<hostI[0]<<endl<<endl;
+	 		cout<<"size : "<<hostI[0]<<","<<idx<<endl<<endl;	 	
 	 	}
  		count++;
 	}
