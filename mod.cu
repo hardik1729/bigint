@@ -1,7 +1,7 @@
 #include<iostream>
 #include<fstream>
 using namespace std;
-#define M (10000+1)
+#define M (100000+1)
 #define N 2*(M-1)
 unsigned long long int B = 65535;
 unsigned long long int T = 1024;
@@ -72,7 +72,7 @@ int main(){
 
 	cudaMalloc((void**)&O, sizeof(unsigned long long int) * N);
 	while(count<=total_count){
-		// cout<<"step : "<<count<<endl;
+		cout<<"\r"<<"step : "<<count;
 //SQUARE
 		cudaError_t err=cudaMemcpy(I,hostI,sizeof(unsigned long long int) * (size+1),cudaMemcpyHostToDevice);
 		if(err)
@@ -145,12 +145,13 @@ int main(){
 				// cout<<idx<<","<<hostI[idx]<<","<<carry<<";";
 			}
 			// cout<<endl;
-			while(--idx>-1 && hostI[idx]==0);
-			hostI[0]=idx;
+			// while(--idx>-1 && hostI[idx]==0);
+			hostI[0]=--idx;
 		}
-
+//FINAL CHECK
  		size=hostI[0];
  		if(total_count==count){
+ 			cout<<endl;
  			if(size==p/s+1){
 	 			int flag=1;
 	 			for(int i=1;i<size+1;i++){
@@ -168,9 +169,9 @@ int main(){
 	 				cout<<"COMPOSITE"<<endl;
 	 		}else{
 	 			for(int i=1;i<size+1;i++){
-	 				cout<<i-1<<","<<hostI[i]<<";";
-	 			}
-	 			cout<<endl;
+					cout<<hostI[i]<<"*"<<"2**"<<s*(i-1)<<"+";
+				}
+				cout<<endl;
 	 			cout<<"TRICKY"<<endl;
 	 		}
 	 		cout<<"size : "<<hostI[0]<<endl<<endl;
