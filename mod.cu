@@ -1,10 +1,7 @@
 #include<iostream>
-#include<fstream>
 using namespace std;
-#define M (100000+1)
+#define M (20000000+1)
 #define N 2*(M-1)
-unsigned long long int B = 65535;
-unsigned long long int T = 1024;
 
 __global__ void square(unsigned long long int I[M], unsigned long long int O[N]){
 	unsigned long long int x = blockIdx.x;
@@ -41,16 +38,15 @@ __global__ void square(unsigned long long int I[M], unsigned long long int O[N])
 	}
 }
 
-int main(){
+int main(int argc,char **argv){
 
 	unsigned long long int *hostI=new unsigned long long int[M];
 	unsigned long long int *hostO=new unsigned long long int[N];
 
 	unsigned long long int size=1;
-	unsigned long long int s=3;
+	unsigned long long int s=20;
 	unsigned long long int base=pow(2,s);
-	unsigned long long int p;
-	cin>>p;
+	unsigned long long int p=atoi(argv[1]);
 	int total_count=p-2;
 	int count=0;
 
@@ -67,19 +63,19 @@ int main(){
 	unsigned long long int *I;
 
 	unsigned long long int *O;
-	
+
 	cudaMalloc((void**)&I, sizeof(unsigned long long int) * M);
 
 	cudaMalloc((void**)&O, sizeof(unsigned long long int) * N);
 	while(count<=total_count){
 		cout<<"\r"<<"step : "<<count;
-//SQUARE
+	//SQUARE
 		cudaError_t err=cudaMemcpy(I,hostI,sizeof(unsigned long long int) * (size+1),cudaMemcpyHostToDevice);
 		if(err)
 			cout<<cudaGetErrorString(err)<<endl;
 
-		T=1024;
-		B=1+(2*size-1)/T;
+		unsigned long long int T=1024;
+		unsigned long long int B=1+(2*size-1)/T;
 
 		dim3 blocks(B,1,1);
 		dim3 threads(T,1,1);
@@ -90,7 +86,7 @@ int main(){
 		if(err)
 			cout<<cudaGetErrorString(err)<<endl;
 
-//NORMALIZED SUM
+	//NORMALIZED SUM
 		unsigned long long int carry=0;
 		int idx;
 		for(idx=1;carry!=0 || idx<2*size;idx++){
@@ -106,7 +102,7 @@ int main(){
 		// cout<<endl;
 		hostI[0]=--idx;
 
-//SUBTRACT 2
+	//SUBTRACT 2
 		if(total_count!=count){
 			int flag=0;
 			for(int i=1;i<hostI[0]+1;i++){
@@ -131,7 +127,7 @@ int main(){
 				hostI[0]--;
 		}
 
-//MODULO
+	//MODULO
 		while(hostI[0]>p/s+1){
 			for(idx=1;carry!=0 || idx<=p/s+1;idx++){
 				if(idx>p/s+1){
@@ -153,7 +149,7 @@ int main(){
 			while(--idx && hostI[idx]==0);
 			hostI[0]=idx;
 		}
-//FINAL CHECK
+	//FINAL CHECK
  		size=hostI[0];
  		if(total_count==count){
  			cout<<endl;
